@@ -16,15 +16,15 @@ int interpret(std::string s) {
     return -2;
 }
 
-void show_log(std::map<std::tm*, std::string> &m) {
-    for (auto it = m.begin(); it != m.end(); it++)
-        std::cout << std::put_time(it->first, "%H:%M:%S") << " " << it->second << std::endl; 
+void show_log(std::map<std::time_t, std::string> &m) {
+    for (std::map<std::time_t, std::string>::iterator it = m.begin(); it != m.end(); it++)
+        std::cout << std::put_time(std::gmtime(&it->first), "%H:%M:%S") << " " << it->second << std::endl;
 }
 
 int main() {
     bool is_tracking = 0, kill = 0;
     std::string taskName;
-    std::map<std::tm*, std::string> log;
+    std::map<std::time_t, std::string> log;
     std::string command = "";
     std::time_t start, end;
 
@@ -39,10 +39,8 @@ int main() {
             case 0:
                 if (is_tracking) {
                     end = std::time(nullptr);
-                    std::time_t d = static_cast<std::time_t>(std::difftime(start, end));
-                    std::tm* t = std::localtime(&d);
-                    log[t] = taskName; // вероятно, такой способ создание элементов в контейнере log неверен, так как где то в указатели закралась ошибка и новые элементы
-                    // на тоже место, t как будто бы всегда один и тот же, просто меняет значение. Уверен, это из-за того, что t как объект не меняет свой адрес, а только меняет значения.
+                    std::time_t spentTime = static_cast<std::time_t>(std::difftime(end, start));
+                    log[spentTime] = taskName;
                     is_tracking = 0;
                 } 
                 std::cout << "Enter task name:" << std::endl;
@@ -53,9 +51,8 @@ int main() {
             case 1:
                 if (is_tracking) {
                     end = std::time(nullptr);
-                    std::time_t d = static_cast<std::time_t>(std::difftime(start, end));
-                    std::tm* t = std::localtime(&d);
-                    log[t] = taskName;
+                    std::time_t spentTime = static_cast<std::time_t>(std::difftime(end, start));
+                    log[spentTime] = taskName;
                     is_tracking = 0;
                 } else 
                     std::cout << "You haven't started a task yet" << std::endl;
@@ -63,7 +60,7 @@ int main() {
             case 2:
                 show_log(log);
                 if (is_tracking)  
-                    std::cout << taskName << "in progress" <<  std::endl; 
+                    std::cout << taskName << " in progress" <<  std::endl; 
                 break;
             case -1:
                 kill = 1;
