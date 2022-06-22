@@ -30,47 +30,64 @@ int main() {
 
         std::time_t t = std::time(nullptr);
         std::tm present_time = *std::localtime(&t);
-        std::tm nearest_bd = present_time;
-        nearest_bd.tm_mon = present_time.tm_mon - 1; // suppose, that the nearest bd
-        nearest_bd.tm_mday = present_time.tm_mday -1; // was last month minus 1 day
+        std::tm nearest_bd = *std::localtime(&t); // suppose that the 
+        nearest_bd.tm_mon = 12;                   // nearest bd is
+        nearest_bd.tm_mday = 31;                  // on the 31 of December
 
         std::vector<std::string> bd_people; //a list of people with the nearest bds  
+
         for (auto it: birthdays_list) {
 
             if (it.second.tm_mon == present_time.tm_mon && it.second.tm_mday == present_time.tm_mday)
                 std::cout << "Today is " << it.first << "'s birthday!" << std::endl;
             else {
 
-                int diff_near_present_m = nearest_bd.tm_mon - present_time.tm_mon;
-                int diff_this_present_m = it.second.tm_mon - present_time.tm_mon;
-
-                if (diff_this_present_m < 0) // if this date earlier than present
+                if (it.second.tm_mon > nearest_bd.tm_mon)
                     continue;
 
-                if (diff_near_present_m > diff_this_present_m) { // if this date aerlier than nearest bd
-                    nearest_bd = it.second;
-                    continue;
+                if (it.second.tm_mon < nearest_bd.tm_mon) {
+                    if (it.second.tm_mon == present_time.tm_mon && it.second.tm_mday > present_time.tm_mday) {
+                        nearest_bd = it.second;
+                        bd_people.clear();
+                        bd_people.push_back(it.first);
+                        continue;
+                    } 
+
+                    if (it.second.tm_mon > present_time.tm_mon) {
+                        nearest_bd = it.second;
+                        bd_people.clear();
+                        bd_people.push_back(it.first);
+                        continue;
+                    }
                 }
 
-                if (diff_near_present_m == diff_near_present_m) { // if these same months
-
-                    if (it.second.tm_mday > nearest_bd.tm_mday) 
-                        continue;
-
-                    if (it.second.tm_mday < nearest_bd.tm_mday) {
-                        nearest_bd = it.second;
-                        continue;
-                    }
-
-                    if (it.second.tm_mday == nearest_bd.tm_mday) { // if this date and the nearest bd are the same date
-                        bd_people.push_back(it.first); // add this people to the list of people with nearest bd 
-                        continue;
-                    }
+                    if (it.second.tm_mon == nearest_bd.tm_mon) {
+                        if (it.second.tm_mon == present_time.tm_mon && 
+                                it.second.tm_mday > present_time.tm_mday &&
+                                it.second.tm_mday < nearest_bd.tm_mday) {
+                            nearest_bd = it.second;
+                            bd_people.clear();
+                            bd_people.push_back(it.first);
+                            continue;
+                        } 
+                        if (it.second.tm_mon > present_time.tm_mon && 
+                            it.second.tm_mday < nearest_bd.tm_mday) {
+                            nearest_bd = it.second;
+                            bd_people.clear();
+                            bd_people.push_back(it.first);
+                            continue;
+                        }
+                        if (it.second.tm_mday == nearest_bd.tm_mday)
+                            bd_people.push_back(it.first);
                 }
             }
         }
-        
-        for (auto i: bd_people) 
-            std::cout << i << " is celebrating his birthday on " << std::put_time(&birthdays_list[i], "%d of %B") << std::endl;
+
+        if (bd_people.empty())
+            std::cout << "No more bithdays this year" << std::endl;
+        else { 
+            for (auto i: bd_people) 
+                std::cout << i << " is celebrating his birthday on " << std::put_time(&birthdays_list[i], "%d of %B") << std::endl;
+        }
     return 0;
 }
