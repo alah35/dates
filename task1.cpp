@@ -24,7 +24,7 @@ void show_log(std::map<std::time_t, std::string> &m) {
 int main() {
     bool is_tracking = 0, kill = 0;
     std::string taskName;
-    std::map<std::time_t, std::string> log;
+    std::map<std::time_t, std::string> log; // a list of tasks and its name
     std::string command = "";
     std::time_t start, end;
 
@@ -37,11 +37,11 @@ int main() {
 
         switch (c) {
             case 0:
-                if (is_tracking) {
+                if (is_tracking) { // if we already have a task in progress first we should stop it
                     end = std::time(nullptr);
-                    std::time_t spentTime = static_cast<std::time_t>(std::difftime(end, start));
-                    log[spentTime] = taskName;
-                    is_tracking = 0;
+                    std::time_t spentTime = static_cast<std::time_t>(std::difftime(end, start)); // qalculate spent time
+                    log[spentTime] = taskName; // make a record in the list
+                    is_tracking = 0; // stop to track this task
                 } 
                 std::cout << "Enter task name:" << std::endl;
                 std::cin >> taskName;

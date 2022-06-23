@@ -4,7 +4,7 @@
 #include <string>
 
 int main() {
-    std::tm start{};
+    std::tm start{};//zero initialization
     std::tm end{};
 
     std::cout << "Enter the time (mm:ss): ";
