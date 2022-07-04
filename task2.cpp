@@ -3,9 +3,7 @@
 #include <string>
 #include <map>
 #include <iomanip>
-#include <climits>
 #include <vector>
-#include <cmath>
 
 int main() {
     std::map<std::string, std::tm> birthdays_list; // a list to save names and bds

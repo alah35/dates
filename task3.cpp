@@ -9,7 +9,7 @@ int main() {
 
     std::cout << "Enter the time (mm:ss): ";
     std::cin >> std::get_time(&end, "%M:%S");
-    int tick = 0;
+    int tick = 1;
     std::time_t _s= std::time(nullptr);
     while (std::difftime(std::mktime(&end), std::mktime(&start)) != 0) {
        if (std::difftime(std::time(nullptr), _s) >= tick) {
